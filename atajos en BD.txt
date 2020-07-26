@@ -1,0 +1,22 @@
+select * from pir_med_db.telefono;
+select * from pir_med_db.persona;
+
+select * from pir_bog_db.persona;
+select * from pir_bog_db.telefono;
+
+
+INSERT INTO `persona` (`id`, `nom`, `app`, `edad`) VALUES
+(1, 'sofi', 'pelt', 62);
+
+
+INSERT INTO `persona` (`id`, `nom`, `app`, `edad`) VALUES
+(2, 'diana', 'juare', 12);
+INSERT INTO `persona` (`id`, `nom`, `app`, `edad`) VALUES
+(3, 'jessi', 'gde', 1);
+
+INSERT INTO `telefono` (`num`, `oper`, `prop`) VALUES
+(1, 'movistar', 1),
+(2, 'hiuw', 2);
+
+INSERT INTO `telefono` (`num`, `oper`, `prop`) VALUES
+(4, 'cua', 2);
