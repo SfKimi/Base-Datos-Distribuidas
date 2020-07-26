@@ -1,0 +1,323 @@
+create schema  per_mid_v;
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Delete_persona`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Delete_persona`(
+
+IN `id_in` INT(10)
+)
+
+BEGIN
+
+      
+delete  from per_med_v.persona where id=id_in;
+		
+delete  from per_bog_v.persona where id=id_in;
+         
+         
+    
+Select 'La persona se ha eliminado de manera correcta' as 'salida';
+
+END$$
+DELIMITER ;
+
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Delete_telefono`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Delete_telefono`(
+
+
+IN `num_in` INT(12)
+
+)
+
+BEGIN
+
+delete  from per_med_v.telefono where num=num_in;
+  
+delete  from per_bog_v.telefono where num=num_in;
+   
+Select 'El telefono se ha eliminado de manera correcta' as 'salida';
+
+
+END$$
+DELIMITER ;
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Insert_persona`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Insert_persona`(
+ 
+   IN id_in int(10),
+ 
+   IN nom_in varchar(45),
+ 
+   IN app_in varchar(45),
+   
+ IN edad_in int(3)
+    )
+
+BEGIN
+    
+    
+/* 
+    Se debe inserta primero (id, nom, app,) (num, oper). En Bogota
+	Se debe inserta segundo (id, edad,) (prop). En Medellin
+	*/
+
+    
+insert into per_bog_v.persona (id, nom, app)values(id_in,nom_in,app_in);
+  
+insert into per_med_v.persona (id, edad)values(id_in,edad_in);
+
+  
+Select 'Persona ingresada  a la  base de  datos' as 'salida';
+
+
+	
+
+END$$
+DELIMITER ;
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Insert_telefono`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Insert_telefono`(
+
+
+IN num_in int(12),
+
+IN oper_in varchar(45),
+
+IN prop_in int(10)
+)
+
+BEGIN  
+   
+ /*Se debe inserta primero (id, nom, app,) (num, oper). En Bogota
+
+Se debe inserta segundo (id, edad,) (prop). En Medellin
+	*/
+      
+insert into per_med_v.telefono (num, prop)values(num_in,prop_in);
+
+insert into per_bog_v.telefono (num, oper)values(num_in,oper_in);
+
+Select 'El telefono se ha insertado correctamente' as 'salida';
+
+END$$
+DELIMITER ;
+
+
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Select_all_persona`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_all_persona`(
+)
+
+BEGIN
+
+    
+/*Bogota*/
+
+select 
+    
+per_bog_v.persona.id, 
+
+per_bog_v.persona.nom, 
+   
+per_bog_v.persona.app, 
+   
+per_med_v.persona.edad 
+  
+from per_bog_v.persona 
+inner join per_med_v.persona ON per_bog_v.persona.id=per_med_v.persona.id;
+END$$
+DELIMITER ;
+
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Select_all_telefono`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_all_telefono`()
+
+BEGIN    
+    
+   	
+select 
+    
+per_bog_v.telefono.num, 
+    
+per_bog_v.telefono.oper, 
+    
+per_med_v.telefono.prop
+    
+from per_bog_v.telefono 
+    
+inner join per_med_v.telefono ON per_bog_v.telefono.num=per_med_v.telefono.num;
+    
+		
+END$$
+DELIMITER ;
+
+
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Select_persona`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_persona`(
+
+IN `id_in` INT(10)
+)
+
+BEGIN
+
+    
+/*Bogota*/
+	
+select 
+    
+per_bog_v.persona.id, 
+    
+per_bog_v.persona.nom, 
+    
+per_bog_v.persona.app, 
+    
+per_med_v.persona.edad 
+    
+from per_bog_v.persona 
+    
+inner join per_med_v.persona ON per_bog_v.persona.id=per_med_v.persona.id
+    
+where per_bog_v.persona.id=id_in AND per_med_v.persona.id=id_in;
+
+ 
+    
+		
+END$$
+DELIMITER ;
+
+
+
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Select_telefono`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_telefono`(
+
+IN `num_in` INT(12)
+)
+
+BEGIN
+
+    
+/*Medellin*/
+   	
+select 
+    
+per_bog_v.telefono.num, 
+    
+per_bog_v.telefono.oper, 
+    
+per_med_v.telefono.prop
+    
+from per_bog_v.telefono 
+    
+inner join per_med_v.telefono ON per_bog_v.telefono.num=per_med_v.telefono.num
+    
+where per_bog_v.telefono.num=num_in AND per_med_v.telefono.num=num_in;
+
+    
+		
+END$$
+DELIMITER ;
+
+
+
+
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Update_persona`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`ADMIN`@`localhost` PROCEDURE `Update_persona`(
+
+IN id_in int(10),
+    
+IN nom_in varchar(45),
+    
+IN app_in varchar(45),
+    
+IN edad_in int(3)
+    
+)
+
+BEGIN
+      
+UPDATE per_bog_v.persona SET nom=nom_in, app=app_in 
+WHERE id=id_in;
+      
+UPDATE per_med_v.persona SET edad=edad_in 
+WHERE id=id_in;
+       
+Select 'El usuario se ha actualizado' as 'salida';
+
+END$$
+DELIMITER ;
+
+
+
+
+USE `per_mid_v`;
+DROP procedure IF EXISTS `Update_telefono`;
+DELIMITER $$
+USE `per_mid_v`$$
+CREATE DEFINER=`ADMIN`@`localhost` PROCEDURE `Update_telefono`(
+
+IN num_in int(12),
+
+IN oper_in varchar(45),
+    
+IN prop_in int(10)
+)
+
+BEGIN
+
+     
+UPDATE per_med_v.telefono SET prop=prop_in 
+WHERE num=num_in;
+	 
+UPDATE per_bog_v.telefono SET oper=oper_in 
+WHERE num=num_in;
+     
+Select 'El telefono se ha actualizado' as 'salida';
+
+END$$
+DELIMITER ;

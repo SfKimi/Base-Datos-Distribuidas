@@ -1,0 +1,23 @@
+create schema  per_bog_v;
+
+use per_bog_v;
+
+create table persona(
+   
+id int(10) not null,
+
+nom varchar(45) not null,
+app varchar(45) not null,
+
+primary key (id)); 
+
+
+create table telefono(
+
+num int(12) not null,
+    
+oper varchar(45) not null,
+    
+primary key(num)
+);
+

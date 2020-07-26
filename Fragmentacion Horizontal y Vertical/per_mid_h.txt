@@ -1,0 +1,677 @@
+create schema  per_mid_h; 
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Delete_persona`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Delete_persona`(
+
+IN `id_in` INT(10)
+
+)
+
+BEGIN
+    
+DECLARE ciclo_fin INT DEFAULT FALSE;
+    
+DECLARE esta INT DEFAULT FALSE;
+    
+DECLARE per int(10);
+    
+DECLARE pm cursor for select id from per_med_h.persona;
+    
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET ciclo_fin = TRUE;
+
+open pm;
+        
+SET esta = false;
+        
+
+buscar: loop
+        
+fetch pm into per;
+        
+        
+IF ciclo_fin THEN
+           
+LEAVE buscar;
+		
+END IF; 
+        
+	
+if per=id_in then
+        
+set esta = true;
+	
+end if;
+    
+
+end loop;
+        
+   
+if esta = true then
+         
+/*delete  from per_med_h.telefono where prop=id_in;*/
+         
+delete  from per_med_h.persona where id=id_in;
+		 
+Select 'Se elimino la persona en medellin' as 'salida';
+
+else
+         
+/*delete  from per_bog_h.telefono where prop=id_in;*/
+         
+delete  from per_bog_h.persona where id=id_in;
+         
+Select 'Se elimino la persona en bogota' as 'salida';
+
+    
+end if;         
+         
+close pm;
+
+
+
+/*Select 'Persona no eliminada, La persona que intenta eliminar no se  encuentra en la base de datos' as 'salida';*/
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Delete_telefono`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Delete_telefono`(
+
+
+IN `num_in` INT(12)
+
+)
+
+BEGIN
+    
+DECLARE ciclo_fin INT DEFAULT FALSE;
+    
+DECLARE esta INT DEFAULT FALSE;
+    
+DECLARE per int(10);
+
+    
+DECLARE pbt cursor for select num from per_bog_h.telefono;
+
+    
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET ciclo_fin = TRUE;
+    
+
+/*//////////////////////////////////////////////////////////////////////////////*/
+       
+open pbt;
+       
+        
+SET esta = false;
+
+buscar: loop
+          
+          
+fetch pbt into per;
+          
+          
+IF ciclo_fin THEN
+          
+LEAVE buscar;
+          
+END IF;        
+            
+		  
+if per=num_in then
+          
+set esta = true;
+		  
+end if;
+
+end loop;
+
+/*//////////////////////////////////////////////////////////////////////////////*/
+
+
+if esta = true then
+        
+delete  from per_bog_h.telefono where num=num_in;
+        
+Select 'Se elimino el telefono en bogota' as 'salida';
+ 
+else
+        
+delete  from per_med_h.telefono where num=num_in;
+       
+Select 'Se elimino el telefono en medellin' as 'salida';
+
+end if;
+        
+close pbt;
+
+
+/*Select 'telefono no eliminada, El telefono que intenta eliminar no se  encuentra en la base de datos' as 'salida';*/
+
+
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Insert_persona`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Insert_persona`(
+
+IN id_in int(10),
+    
+IN nom_in varchar(45),
+    
+IN app_in varchar(45),
+    
+IN edad_in int(3),
+    
+IN ciudad_in enum('Bogota','Medellin'))
+
+BEGIN
+
+DECLARE ciclo_fin INT DEFAULT FALSE;
+    
+DECLARE esta INT DEFAULT FALSE;
+    
+DECLARE per int(10);
+DECLARE pb cursor for select id from per_bog_h.persona;
+    
+DECLARE pm cursor for select id from per_med_h.persona;
+    
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET ciclo_fin = TRUE;
+
+if ciudad_in like 'Bogota' then
+
+open pm;
+        
+SET esta = false;
+
+buscar: loop
+
+fetch pm into per;
+
+IF ciclo_fin THEN
+
+LEAVE buscar;
+
+END IF;        
+            
+if per=id_in then
+
+set esta = true;
+            
+end if;
+end loop;
+        
+if esta = false then
+
+insert into per_bog_h.persona values(id_in,nom_in,app_in,edad_in);
+
+Select 'Se inserto el usuario en Bogota' as 'salida';
+
+else
+
+Select 'No inserto el usuario en Bogota, Existe en Medellin' as 'salida';
+
+end if;
+        
+close pm;
+
+elseif ciudad_in like 'Medellin' then
+
+open pb;
+        
+SET esta = false;
+
+buscar: loop
+
+fetch pb into per;
+
+IF ciclo_fin THEN
+
+LEAVE buscar;
+
+END IF;        
+            
+if per=id_in then
+
+set esta = true;
+            
+end if;
+
+end loop;
+        
+if esta = false then
+
+insert into per_med_h.persona values(id_in,nom_in,app_in,edad_in);
+
+Select 'Se inserto el usuario en Medellin' as 'salida';
+
+else
+
+Select 'No inserto el usuario en Medellin, Existe en Bogota' as 'salida';
+
+end if;
+        
+close pb;
+
+else
+
+Select 'Error de ciudad' as 'salida';
+
+end if;
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `insert_telefono`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_telefono`(
+
+    
+IN num_in int(12),
+    
+IN oper_in varchar(45),
+    
+IN prop_in int(10))
+
+BEGIN
+
+
+/*//////////////////////////////*/
+    
+DECLARE ciclo_fin INT DEFAULT FALSE;
+    
+DECLARE estaM INT DEFAULT FALSE;
+    
+DECLARE estaB INT DEFAULT FALSE;
+    
+DECLARE per int(12);
+    
+DECLARE pir int(12);
+    
+DECLARE pb cursor for select num from per_bog_h.telefono;
+    
+DECLARE pm cursor for select num from per_med_h.telefono;
+    
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET ciclo_fin = TRUE;
+  
+ 
+/*//////////////////////////////*/
+ 
+if (select per_med_h.persona.id from per_med_h.persona where per_med_h.persona.id=prop_in)=prop_in  then
+
+open pb;
+
+SET estaB = false;
+
+buscar: loop
+
+fetch pb into per;
+
+IF ciclo_fin THEN
+
+LEAVE buscar;
+
+END IF;
+if per=num_in then
+             
+set estaB = true;
+            
+end if;
+
+end loop;
+
+/*//////////////////////////////*/
+
+if estaB = false  then
+    
+     
+insert into per_med_h.telefono values(num_in,oper_in,prop_in);
+
+Select 'Se inserto el telefono en Medellin' as 'salida';
+
+
+else
+
+Select 'No inserto el Telefono, Existe en Bogota' as 'salida';
+
+end if;
+
+close pb;
+
+/*//////////////////////////////*/
+/*//////////////////////////////*/
+     
+     
+     
+     
+     
+/*//////////////////////////////*/
+     
+elseif(select per_bog_h.persona.id from per_bog_h.persona where per_bog_h.persona.id=prop_in)=prop_in  then
+
+open pm;
+
+SET estaM = false;
+
+buscarM: loop
+
+fetch pm into pir;
+
+IF ciclo_fin THEN
+
+LEAVE buscarM;
+
+END IF;        
+	
+if pir=num_in then
+    
+set estaM = true;
+	
+end if;
+
+end loop;
+
+
+/*//////////////////////////////*/
+
+if estaM = false then
+      
+      
+insert into per_bog_h.telefono values(num_in,oper_in,prop_in);
+	  
+Select 'Se inserto el telefono en Bogota' as 'salida';
+    
+
+else 
+Select 'No inserto el Telefono, Existe en Medellin' as 'salida';
+
+end if;
+
+close pm;
+
+else
+Select 'Error de todo' as 'salida';
+
+end if;
+
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Select_all_persona`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_all_persona`(
+
+)
+
+BEGIN
+    
+     
+select * from per_med_h.persona 
+UNION select * from per_bog_h.persona ;     
+
+
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Select_all_telefono`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_all_telefono`(
+
+)
+
+BEGIN
+
+    
+
+
+    
+select * from per_bog_h.telefono 
+UNION select * from per_med_h.telefono;
+    
+
+
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Select_persona`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_persona`(
+
+IN `id_in` INT(10)
+)
+
+BEGIN
+
+
+    
+/*Bogota*/
+    
+if (select per_med_h.persona.id from per_med_h.persona where per_med_h.persona.id=id_in)=id_in then
+    
+select * from per_med_h.persona 
+where per_med_h.persona.id=id_in;
+	
+    
+    
+elseif (select per_bog_h.persona.id from per_bog_h.persona where per_bog_h.persona.id=id_in)=id_in then
+    
+select * from per_bog_h.persona where per_bog_h.persona.id=id_in;
+else
+    
+Select 'Usuario no encontrado, El usuario que intenta buscar no se encuentra en la base de datos' as 'salida';
+
+end if;
+
+
+
+
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Select_telefono`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Select_telefono`(
+
+
+IN `num_in` INT(12)
+
+)
+
+BEGIN
+
+    
+
+    
+/*Medellin*/
+   	 
+if (select per_med_h.telefono.num from per_med_h.telefono where per_med_h.telefono.num=num_in)=num_in then
+    
+select * from per_med_h.telefono where per_med_h.telefono.num=num_in;
+	
+    
+    
+elseif (select per_bog_h.telefono.num from per_bog_h.telefono where per_bog_h.telefono.num=num_in)=num_in then
+    
+select * from per_bog_h.telefono where per_bog_h.telefono.num=num_in;
+	
+
+     
+else
+    
+Select 'Telefono no encontrado, El telefono que intenta buscar no se encuentra en la base de datos' as 'salida';
+    
+end if;
+
+
+
+
+
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Update_persona`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Update_persona`(
+
+IN id_in int(10),
+ 
+IN nom_in varchar(45),
+    
+IN app_in varchar(45),
+    
+IN edad_in int(3)
+    )
+
+BEGIN
+   
+if (select per_med_h.persona.id from per_med_h.persona where per_med_h.persona.id=id_in)=id_in then
+    
+UPDATE per_med_h.persona SET nom=nom_in, app=app_in, edad=edad_in WHERE id=id_in;
+    
+Select 'Se actualizo el usuario en medellin' as 'salida';
+    
+    
+elseif(select per_bog_h.persona.id from per_bog_h.persona where per_bog_h.persona.id=id_in)=id_in then
+      
+UPDATE per_bog_h.persona SET nom=nom_in, app=app_in, edad=edad_in WHERE id=id_in;
+        
+Select 'Se actualizo el usuario en bogota' as 'salida';
+        
+	 
+else 
+     
+Select 'No se actualizo el usuario, El usuario que intenta actualizar no se  encuantra  en la base de datos' as 'salida';
+	
+end if;
+
+
+
+
+
+END$$
+DELIMITER ;
+
+
+
+USE `per_mid_h`;
+DROP procedure IF EXISTS `Update_telefono`;
+DELIMITER $$
+USE `per_mid_h`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Update_telefono`(
+
+IN num_in int(12),
+    
+IN oper_in varchar(45),
+    
+IN prop_in int(10)
+    )
+
+BEGIN
+
+
+   
+if (select per_med_h.telefono.num from per_med_h.telefono where per_med_h.telefono.num=num_in)=num_in then
+	
+UPDATE per_med_h.telefono SET oper=oper_in, prop=prop_in WHERE num=num_in;
+    
+Select 'Se actualizo el telefono en medellin' as 'salida';
+    
+    
+elseif (select per_bog_h.telefono.num from per_bog_h.telefono where per_bog_h.telefono.num=num_in)=num_in then
+	
+UPDATE per_bog_h.telefono SET oper=oper_in, prop=prop_in WHERE num=num_in;
+	
+Select 'Se actualizo el telefono en bogota' as 'salida';
+    
+else 
+	
+Select 'No se actualizo el telefono, El telefono que intenta actualizar no se  encuantra  en la base de datos' as 'salida';
+    
+end if;
+
+
+
+
+
+
+
+END$$
+DELIMITER ;
+
+
+

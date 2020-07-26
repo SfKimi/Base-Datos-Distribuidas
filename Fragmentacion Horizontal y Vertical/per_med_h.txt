@@ -1,0 +1,36 @@
+create schema  per_med_h;
+
+use per_med_h;
+
+create table persona(
+  
+id int(10) not null,
+  
+nom varchar(45) not null,
+ 
+app varchar(45) not null,
+   
+edad int(3) not null,
+   
+primary key (id)); 
+
+
+create table telefono(
+
+num int(12) not null,
+    
+oper varchar(45) not null,
+    
+prop int(10) not null,
+    
+primary key(num),
+    
+constraint fk_telefono_persona 
+    
+foreign key(prop) references persona(id)
+    
+ON UPDATE CASCADE
+    
+ON DELETE RESTRICT
+);
+
